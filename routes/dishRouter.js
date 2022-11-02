@@ -22,7 +22,8 @@ dishRouter.route("/")
 .post((req, res, next) => {
      Dishes.create(req.body)
           .then((dish) => {
-               console.log("Dish created: " + dish);res.statusCode = 200;
+               console.log("Dish created: " + dish);
+               res.statusCode = 200;
                res.setHeader("Content-Type", "application/json");
                res.json(dish);
           }, (err) => next(err))
@@ -123,7 +124,7 @@ dishRouter.route("/:dishId/comments")
           .then((dish) => {
                if (dish){
                     for(let i = (dish.comments.length - 1); i >= 0; i--){
-                         dish.comments.id(dish.comments[i]).pop();
+                         dish.comments.id(dish.comments[i]).remove();
                     }
                     dish.save()
                          .then((dish) => {
