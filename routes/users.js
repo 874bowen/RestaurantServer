@@ -9,9 +9,15 @@ var router = express.Router();
 router.use(bodyParser.json());
 
 /* GET users listing. */
-router.get('/', function (req, res, next) {
-  res.send('respond with a resource');
-});
+router.get("/", authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
+  User.find({})
+  .then((users) => {
+       res.statusCode = 200;
+       res.setHeader("Content-Type", "application/json");
+       res.json(users);
+  }, (err) => next(err))
+  .catch((err) => next(err));
+})
 
 router.post('/signup', function (req, res, next) { // '/users/signup'
   User.register(new User({ username: req.body.username }), req.body.password, (err, user) => {
@@ -38,8 +44,7 @@ router.post('/signup', function (req, res, next) { // '/users/signup'
   });
 });
 
-router.post('/login', passport.authenticate('local'), (req, res, next) => {
-
+router.post('/login', passport.authenticate('local'), (req, res, next) => {  
   var token = authenticate.getToken({_id: req.user._id});
   res.statusCode = 200;
   res.setHeader("Content-Type", "application/json");
@@ -57,6 +62,5 @@ router.get("/logout", (req, res) => {
     next(err);
   }
 });
-
 
 module.exports = router;
